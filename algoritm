@@ -1,0 +1,25 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.ensemble import VotingClassifier
+df = pd.read_excel('c:\\Users\\Galym Ayana\\Desktop\\python\\Bank_Personal_Loan_Modelling.xlsx',"Data")
+df.head()
+df.info()
+X = df.drop(['ID', 'Personal Loan'], axis=1)
+y = df['Personal Loan']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+adaboost_classifier = AdaBoostClassifier(random_state=42)
+random_forest_classifier = RandomForestClassifier(random_state=42)
+logistic_regression_classifier = LogisticRegression(random_state=42)
+voting_classifier = VotingClassifier(estimators=[
+    ('adaboost', adaboost_classifier),
+    ('random_forest', random_forest_classifier),
+    ('logistic_regression', logistic_regression_classifier)
+], voting='soft')
+voting_classifier.fit(X_train, y_train)
+y_pred = voting_classifier.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Точность смеси алгоритмов: {accuracy:.2f}')
